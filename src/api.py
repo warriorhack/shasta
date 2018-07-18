@@ -24,12 +24,25 @@ class Recipe(Resource):
         process.set_config(app.config['DATABASE_CONN_STRING'])
         return process.postRecipe(payload)
 
-class GetDietPreference(Resource):
+class ListDietPreference(Resource):
 
-    def get(self):
+    def get(self, user_id):
         process = Process_Request()
         process.set_config(app.config['DATABASE_CONN_STRING'])
-        return process.getDietPreference()
+        return process.getDietPreference(user_id)
+
+class GetIngredientForRecipe(Resource):
+    #Search for a recipe
+    def get(self, recipe_name):
+        process = Process_Request()
+        process.set_config(app.config['DATABASE_CONN_STRING'])
+        return process.getIngredientForRecipe(recipe_name)
+
+class GetRecipesDietPref(Resource):
+    def get(self, user_id):
+        process = Process_Request()
+        process.set_config(app.config['DATABASE_CONN_STRING'])
+        return process.getRecipesDietPref()
 
 class GetAllRecipes(Resource):
 
@@ -40,11 +53,10 @@ class GetAllRecipes(Resource):
 
 class GetRecipesByIngredient(Resource):
 
-    def get(self):
+    def get(self, ingredient_name):
         process = Process_Request()
         process.set_config(app.config['DATABASE_CONN_STRING'])
-        return process.getRecipesByIngredient()
-
+        return process.getRecipesByIngredient(ingredient_name)
 
 # List all the recipes
 class ListRecipes(Resource):
@@ -85,10 +97,12 @@ api.add_resource(Recipe,'/recipes/<string:recipe_name>')
 api.add_resource(GetAllRecipes,'/recipes/all')
 api.add_resource(ListRecipes,'/recipes/list')
 api.add_resource(GetRecipesByIngredient, '/recipes/ingredient/<string:ingredient_name>')
-
+api.add_resource(GetIngredientForRecipe, '/ingredient/recipes/<string:recipe_name>')
+api.add_resource(GetRecipesDietPref, '/recipes/dietpref/<int:user_id>')
 api.add_resource(User,'/user/<int:user_id>')
 api.add_resource(Cooking_Preferrence,'/user/cookpref/<int:user_id>')
-api.add_resource(GetDietPreference, '/user/dietpref/<int:user_id>')
+api.add_resource(ListDietPreference, '/user/dietpref/<int:user_id>')
+
 
 if __name__ == '__main__':
     app.run()

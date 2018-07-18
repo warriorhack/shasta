@@ -62,9 +62,9 @@ class Process_Request(object):
         self.user_id = user_id
         self.Dbobj = DB(self.conn_str)
         self.Dbobj.connect()
-        query = "SELECT first_name, last_name,sex,address,phone,create_date FROM users WHERE isactive is True and id = %s"%(self.user_id)
-            rows = self.Dbobj.run_select_query(query)
-            return rows
+        query = "SELECT first_name, last_name,sex,address,phone, id as user_id FROM users WHERE isactive is True and id = %s"%(self.user_id)
+        rows = self.Dbobj.run_select_query(query)
+        return rows
 
     def postUser(self,user_details):
         self.user_details = user_details
@@ -137,10 +137,11 @@ class Process_Request(object):
         rows = self.Dbobj.run_select_query(query)
         return rows
 
-    def getDietPreference(self):
+    def getDietPreference(self, user_id):
+        self.user_id = user_id
         self.Dbobj = DB(self.conn_str)
         self.Dbobj.connect()
-        query = "SELECT i.name as ingredient, cdm.create_date as create_date FROM user_diet_preference_map cdm inner join ingredient i on i.id = cdm.ingredient_id where cdm.isactive = True and cdm.user_id = %s"%(self.user_id)
+        query = "SELECT i.name as ingredient FROM user_diet_preference_map cdm inner join ingredient i on i.id = cdm.ingredient_id where cdm.isactive = True and cdm.user_id = %s"%(self.user_id)
         rows = self.Dbobj.run_select_query(query)
         return rows
 
@@ -149,5 +150,21 @@ class Process_Request(object):
         self.Dbobj = DB(self.conn_str)
         self.Dbobj.connect()
         query = "SELECT r.name as recipe, r.creator as creator, r.description as description FROM recipe_ingredient_map rim inner join recipe r on r.id = rim.recipe_id inner join ingredient i on i.id = rim.ingredient_id where r.isactive = True and i.name = '%s'"%(self.ingredient)
+        rows = self.Dbobj.run_select_query(query)
+        return rows
+
+    def getIngredientForRecipe(self, recipe_name):
+        self.recipe_name = recipe_name
+        self.Dbobj = DB(self.conn_str)
+        self.Dbobj.connect()
+        query = "SELECT i.name as ingredient, CAST(m.measurement AS TEXT) as measurement, m.unit as unit from recipe_ingredient_map rim inner join recipe r on r.id = rim.recipe_id inner join ingredient i on i.id = rim.ingredient_id inner join measurements m on m.id = rim.measurements_id where r.name = '%s'"%(self.recipe_name)
+        rows = self.Dbobj.run_select_query(query)
+        return rows
+
+    def getRecipesDietPref(self, user_id):
+        self.user_id = user_id
+        self.Dbobj = DB(self.conn_str)
+        self.Dbobj.connect()
+        query = "todo"
         rows = self.Dbobj.run_select_query(query)
         return rows
